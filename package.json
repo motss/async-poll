@@ -1,0 +1,65 @@
+{
+  "name": "async-poll",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Async polling with condition and timeout",
+  "keywords": [
+    "async-poll",
+    "node",
+    "typescript"
+  ],
+  "homepage": "https://github.com/motss/async-poll",
+  "license": "MIT",
+  "author": {
+    "name": "Rong Sen Ng (motss)",
+    "email": "wes.ngrongsen@gmail.com",
+    "url": "https://github.com/motss"
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "dist/index.mjs",
+
+    "dist/browser.d.ts",
+    "dist/browser.js",
+    "dist/browser.mjs"
+  ],
+  "main": "dist/index",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:motss/async-poll.git"
+  },
+  "types": [
+    "dist/index.d.ts",
+    "dist/browser.d.ts"
+  ],
+  "scripts": {
+    "build:debug": "rm -rf dist/ && tsc -p tsconfig.json",
+    "build": "rm -rf dist/ && npm run build:cjs && npm run build:esm && echo \"> [build] Done!\"",
+    "build:cjs": "npm run lint && tsc -p tsconfig.prod.json && echo \"> [cjs] Done!\"",
+    "build:esm": "npm run lint && tsc -p tsconfig.esm.prod.json && mv tmp/index.js dist/index.mjs && mv tmp/browser.js dist/browser.mjs && rm -rf tmp && echo \"> [esm] Done!\"",
+    "demo": "node demo/index.js",
+    "clean": "rm -rf ./*.*js ./*.d.ts dist/",
+    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
+    "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
+    "prepublishOnly": "npm run lint && npm run build",
+    "test": "jest --config ./.jestrc.json",
+    "jest": "jest --watchAll --config ./.jestrc.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@messageflow/tslint-config": "^1.2.0",
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.3",
+    "jest": "^23.6.0",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.1"
+  },
+  "engines": {
+    "node": ">= 10.11.0",
+    "npm": ">= 6.4.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
