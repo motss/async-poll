@@ -40,7 +40,8 @@
     - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
     - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
 - [API Reference](#api-reference)
-  - [asyncPoll(fn, conditionFn, interval, timeout)](#asyncpollfn-conditionfn-interval-timeout)
+  - [AsyncPollParams\<T\>](#asyncpollparamst)
+  - [asyncPoll\<T\>(params)](#asyncpolltparams)
 - [License](#license)
 
 ## Pre-requisites
@@ -74,7 +75,12 @@ const interval = 2e3;
 const timeout = 30e3;
 
 async function main() {
-  return asyncPoll(fn, conditionFn, interval, timeout);
+  return asyncPoll({
+    fn,
+    conditionFn,
+    interval,
+    timeout
+  });
 }
 
 main().then(console.log).catch(console.error);
@@ -102,7 +108,12 @@ const interval = 2e3;
 const timeout = 30e3;
 
 async function main(): Promise<NewsData> {
-  return asyncPoll<NewsData>(fn, conditionFn, interval, timeout);
+  return asyncPoll<NewsData>({
+    fn,
+    conditionFn,
+    interval,
+    timeout
+  });
 }
 
 main().then(console.log).catch(console.error);
@@ -125,7 +136,12 @@ async function main() {
     }
   });
   perfObs.observe({ entryTypes: ['measure'] });
-  const d = await asyncPoll(fn, conditionFn, interval, timeout);
+  const d = await asyncPoll({
+    fn,
+    conditionFn,
+    interval,
+    timeout
+  });
   perObs.disconnect();
 
   return {
@@ -138,13 +154,25 @@ async function main() {
 
 ## API Reference
 
-### asyncPoll(fn, conditionFn, interval, timeout)
+### AsyncPollParams\<T\>
 
-- `fn` <[Function][function-mdn-url]> Function to execute for each polling happens.
-- `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
-- `interval` <[number][number-mdn-url]> Polling interval.
-- `timeout` <[number][number-mdn-url]> Timeout.
-- returns: <[Promise][promise-mdn-url]<[`T`]>> Promise which resolves with a value in the type of `T`.
+```ts
+declare interface AsyncPollParams<T> {
+  fn: () => Promise<T>;
+  conditionFn: (d: T) => boolean;
+  interval: number;
+  timeout: number;
+}
+```
+
+### asyncPoll\<T\>(params)
+
+- `params` <[AsyncPollParams][asyncpollparamst-url]> Configuration to setup asynchronous polling.
+  - `fn` <[Function][function-mdn-url]> Function to execute for each polling happens.
+  - `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
+  - `interval` <[number][number-mdn-url]> Polling interval.
+  - `timeout` <[number][number-mdn-url]> Timeout.
+- returns: <[Promise][promise-mdn-url]<`T`>> Promise which resolves with a value in the type of `T`.
 
 ## License
 
@@ -157,6 +185,7 @@ async function main() {
 [node-releases-url]: https://nodejs.org/en/download/releases
 [performance-timing-api-url]: https://nodejs.org/api/perf_hooks.html
 [performance-timeline-api-url]: https://developer.mozilla.org/en-US/docs/Web/API/Performance
+[asyncpollparamst-url]: #asyncpollparamst
 
 <!-- MDN -->
 [array-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
@@ -186,8 +215,8 @@ async function main() {
 [codecov-badge]: https://flat.badgen.net/codecov/c/github/motss/async-poll?label=codecov
 [coveralls-badge]: https://flat.badgen.net/coveralls/c/github/motss/async-poll?label=coveralls
 
-[codebeat-badge]: https://codebeat.co/badges/123
-[codacy-badge]: https://api.codacy.com/project/badge/Grade/123
+[codebeat-badge]: https://codebeat.co/badges/56458b75-7d18-4a52-b3eb-b29f5367e244
+[codacy-badge]: https://api.codacy.com/project/badge/Grade/fdcab22d5b26401486e89d0ed1124171
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
