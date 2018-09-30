@@ -5,7 +5,12 @@
   "description": "Async polling with condition and timeout",
   "keywords": [
     "async-poll",
+    "async-polling",
     "node",
+    "performance",
+    "performance-observer",
+    "poll",
+    "polling",
     "typescript"
   ],
   "homepage": "https://github.com/motss/async-poll",
