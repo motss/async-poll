@@ -3,11 +3,13 @@ dist: trusty
 node_js:
   - v8
   - v10
-# before_script:
-#   - npm i -g npm@latest  --quiet
-#   - npm i codecov coveralls --quiet
+before_script:
+  - npm i -g npm@latest  --quiet
+  - npm i codecov coveralls --quiet
 script:
-#   - npm cit --quiet
-# after_success:
-#   - 'cat ./coverage/lcov.info | coveralls'
-#   - 'cat ./coverage/lcov.info | codecov'
+  - npm ci --quiet
+  - npm run build
+  - npm t
+after_success:
+  - 'cat ./coverage/lcov.info | coveralls'
+  - 'cat ./coverage/lcov.info | codecov'
