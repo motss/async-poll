@@ -6,8 +6,6 @@ declare interface AsyncPollParams<T> {
 }
 
 async function delay(t: number) {
-  console.log({ t });
-
   return t < 1 ? Promise.resolve() : new Promise(yay => setTimeout(yay, t));
 }
 

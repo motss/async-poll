@@ -19,9 +19,10 @@ describe('async-poll', () => {
      * NOTE: JSDOM does not support `performance#mark` and `performance#measure`
      * Since `perf_hooks` complies to W3C specs, we can use that directly.
      */
-    (global as any).window = jest.fn().mockImplementation(() => {
+    const windowFn = jest.fn().mockImplementation(() => {
       return { performance };
     });
+    (global as any).window = windowFn();
   });
 
   describe('error', () => {
