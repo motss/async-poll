@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo with `async-poll`</title>
+  </head>
+
+  <body>
+    <main>`async-poll` FTW</main>
+
+    <script type="module">
+      import { asyncPoll } from 'https://unpkg.com/async-poll@latest/dist/browser.mjs';
+
+      async function main() {
+        const fn = async () => fetch('http://example.com').then(r => r.text());
+        const conditionFn = d => Array.isArray(d);
+        const interval = 2e3;
+        const timeout = 10e3;
+
+        let a = {};
+        const perfObs = new PerformanceObserver((list) => {
+          for (const n of list.getEntries()) {
+            a[n.name] = n.duration;
+          }
+        });
+
+        perfObs.observe({ entryTypes: ['measure'] });
+        const d = await asyncPoll({ fn, conditionFn, interval, timeout });
+        /**
+         * NOTE: On browsers, once calling `disconnect()` the observer detaches immediately.
+         * Whereas, in Node.js, `disconnect()` will be called
+         * once all items in the queue have been processed.
+         */
+        setTimeout(() => perfObs.disconnect());
+
+        return {
+          data: d,
+          metrics: a,
+        };
+      }
+
+      main().then(console.log).catch(console.error);
+    </script>
+  </body>
+</html>
