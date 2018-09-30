@@ -25,7 +25,9 @@
 [![Codacy Badge][codacy-badge]][codacy-url]
 [![Code of Conduct][coc-badge]][coc-url]
 
-> Better greeting message
+> Writing your own polling function can be difficult and hard to collect metrics about the polling. `asyncPoll` aims to solve those with modern JavaScript and advanced API. By leveraging `async...await`, asynchronous polling function has never been easier and [Performance Timing/ Timeline API][performance-timeline-api-url] is used to collect metrics about each polling in terms of the duration.
+>
+> 🛠 Please check if `Performance Timing/ Timeline API` is supported on your browser or Node.js environment.
 
 ## Table of contents
 
@@ -36,15 +38,15 @@
   - [Usage](#usage)
     - [Node.js](#nodejs)
     - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
+    - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
 - [API Reference](#api-reference)
-  - [greeting([name])](#greetingname)
-  - [greetingSync([name])](#greetingsyncname)
+  - [asyncPoll(fn, conditionFn, interval, timeout)](#asyncpollfn-conditionfn-interval-timeout)
 - [License](#license)
 
 ## Pre-requisites
 
-- [Node.js][nodejs-url] >= 10.11.0
-- [NPM][npm-url] >= 6.4.1 ([NPM][npm-url] comes with [Node.js][nodejs-url] so there is no need to install separately.)
+- [Node.js][nodejs-url] >= 8.9.0
+- [NPM][npm-url] >= 5.5.1 ([NPM][npm-url] comes with [Node.js][nodejs-url] so there is no need to install separately.)
 
 ## Setup
 
@@ -60,27 +62,89 @@ $ npm install --save async-poll
 #### Node.js
 
 ```js
-const greeting = require('async-poll');
+const { asyncPoll } = require('async-poll');
+
+/** Fetch news from a mock URL */
+const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
+/** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
+const conditionFn = d => d.data.news.length > 100 || d.data.status === 'complete';
+/** Poll every 2 seconds */
+const interval = 2e3;
+/** Timeout after 30 seconds and returns end result */
+const timeout = 30e3;
+
+async function main() {
+  return asyncPoll(fn, conditionFn, interval, timeout);
+}
+
+main().then(console.log).catch(console.error);
 ```
 
 #### Native ES modules or TypeScript
 
 ```ts
-// @ts-check
+declare interface NewsData {
+  data: {
+    news: object[];
+    status: number;
+  };
+}
 
-import greeting from 'async-poll';
+import asyncPoll from 'async-poll';
+
+/** Fetch news from a mock URL */
+const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
+/** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
+const conditionFn = (d: NewsData) => d.data.news.length > 100 || d.data.status === 'complete';
+/** Poll every 2 seconds */
+const interval = 2e3;
+/** Timeout after 30 seconds and returns end result */
+const timeout = 30e3;
+
+async function main(): Promise<NewsData> {
+  return asyncPoll<NewsData>(fn, conditionFn, interval, timeout);
+}
+
+main().then(console.log).catch(console.error);
+```
+
+#### Performance Timing/ Timeline API via `PerformanceObserver`
+
+Performance timing data can be obtained via the experimental [Performance Tming API][performance-timing-api-url] that has been added as of [Node.js 8.5.0][nodejs-url] or [Performance Timeline API][performance-timeline-api-url] on browsers.
+
+```ts
+/** For Node.js **only**, no import is required on browser. */
+import { PerformanceObserver } from 'perf_hooks';
+
+...
+async function main() {
+  let measurements = {};
+  const perfObs = new PerformanceObserver((list) => {
+    for (const n of list.getEntries()) {
+      measurements[n.name] = n.duration;
+    }
+  });
+  perfObs.observe({ entryTypes: ['measure'] });
+  const d = await asyncPoll(fn, conditionFn, interval, timeout);
+  perObs.disconnect();
+
+  return {
+    data: d,
+    measurements,
+  };
+}
+...
 ```
 
 ## API Reference
 
-### greeting([name])
+### asyncPoll(fn, conditionFn, interval, timeout)
 
-- `name` <[string][string-mdn-url]> Name of the person to greet at.
-- returns: <[Promise][promise-mdn-url]<[string][string-mdn-url]>> Promise which resolves with a greeting message.
-
-### greetingSync([name])
-
-This methods works the same as `greeting(name)` except that this is the synchronous version.
+- `fn` <[Function][function-mdn-url]> Function to execute for each polling happens.
+- `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
+- `interval` <[number][number-mdn-url]> Polling interval.
+- `timeout` <[number][number-mdn-url]> Timeout.
+- returns: <[Promise][promise-mdn-url]<[`T`]>> Promise which resolves with a value in the type of `T`.
 
 ## License
 
@@ -91,6 +155,8 @@ This methods works the same as `greeting(name)` except that this is the synchron
 [nodejs-url]: https://nodejs.org
 [npm-url]: https://www.npmjs.com
 [node-releases-url]: https://nodejs.org/en/download/releases
+[performance-timing-api-url]: https://nodejs.org/api/perf_hooks.html
+[performance-timeline-api-url]: https://developer.mozilla.org/en-US/docs/Web/API/Performance
 
 <!-- MDN -->
 [array-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
