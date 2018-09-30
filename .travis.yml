@@ -8,7 +8,7 @@ before_script:
   - npm i codecov coveralls --quiet
 script:
   - npm ci --quiet
-  - npm run build
+  - npm run build:test
   - npm t
 after_success:
   - 'cat ./coverage/lcov.info | coveralls'
