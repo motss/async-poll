@@ -67,7 +67,7 @@ describe('browser', () => {
   });
 
   describe('ok', () => {
-    it('completes the async polling', async () => {
+    it('completes the polling', async () => {
       try {
         const d = await asyncPoll(fn, conditionFn, { interval, timeout });
 

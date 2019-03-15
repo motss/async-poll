@@ -27,7 +27,7 @@
         });
 
         perfObs.observe({ entryTypes: ['measure'] });
-        const d = await asyncPoll({ fn, conditionFn, interval, timeout });
+        const d = await asyncPoll(fn, conditionFn, { interval, timeout });
         /**
          * NOTE: On browsers, once calling `disconnect()` the observer detaches immediately.
          * Whereas, in Node.js, `disconnect()` will be called

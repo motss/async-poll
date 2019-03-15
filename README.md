@@ -1,10 +1,12 @@
 <div align="center" style="text-align: center;">
   <h1 style="border-bottom: none;">async-poll</h1>
 
-  <p>Async polling with condition and timeout</p>
+  <p>Advanced polling module with timeout and metrics collection</p>
 </div>
 
 <hr />
+
+[![Follow me][follow-me-badge]][follow-me-url]
 
 [![Version][version-badge]][version-url]
 [![Node version][node-version-badge]][node-version-url]
@@ -29,19 +31,17 @@
 >
 > 🛠 Please check if `Performance Timing/ Timeline API` is supported on your browser or Node.js environment.
 
-## Table of contents
+## Table of contents <!-- omit in toc -->
 
-- [Table of contents](#table-of-contents)
 - [Pre-requisites](#pre-requisites)
-- [Setup](#setup)
-  - [Install](#install)
-  - [Usage](#usage)
-    - [Node.js](#nodejs)
-    - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
-    - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
+- [Install](#install)
+- [Usage](#usage)
+  - [TypeScript or native ES modules](#typescript-or-native-es-modules)
+  - [Node.js](#nodejs)
+  - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
 - [API Reference](#api-reference)
-  - [AsyncPollParams\<T\>](#asyncpollparamst)
-  - [asyncPoll\<T\>(params)](#asyncpolltparams)
+  - [AsyncPollOptions](#asyncpolloptions)
+  - [asyncPoll\<T\>(fn, conditionFn[, options])](#asyncpolltfn-conditionfn-options)
 - [License](#license)
 
 ## Pre-requisites
@@ -49,47 +49,19 @@
 - [Node.js][nodejs-url] >= 8.9.0
 - [NPM][npm-url] >= 5.5.1 ([NPM][npm-url] comes with [Node.js][nodejs-url] so there is no need to install separately.)
 
-## Setup
-
-### Install
+## Install
 
 ```sh
 # Install via NPM
 $ npm install --save async-poll
 ```
 
-### Usage
+## Usage
 
-#### Node.js
-
-```js
-const { asyncPoll } = require('async-poll');
-
-/** Fetch news from a mock URL */
-const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
-/** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
-const conditionFn = d => d.data.news.length > 100 || d.data.status === 'complete';
-/** Poll every 2 seconds */
-const interval = 2e3;
-/** Timeout after 30 seconds and returns end result */
-const timeout = 30e3;
-
-async function main() {
-  return asyncPoll({
-    fn,
-    conditionFn,
-    interval,
-    timeout
-  });
-}
-
-main().then(console.log).catch(console.error);
-```
-
-#### Native ES modules or TypeScript
+### TypeScript or native ES modules
 
 ```ts
-declare interface NewsData {
+interface NewsData {
   data: {
     news: object[];
     status: number;
@@ -107,19 +79,31 @@ const interval = 2e3;
 /** Timeout after 30 seconds and returns end result */
 const timeout = 30e3;
 
-async function main(): Promise<NewsData> {
-  return asyncPoll<NewsData>({
-    fn,
-    conditionFn,
-    interval,
-    timeout
-  });
-}
-
-main().then(console.log).catch(console.error);
+asyncPoll<NewsData>(fn, conditionFn, { interval, timeout })
+  .then(console.log)
+  .catch(console.error);
 ```
 
-#### Performance Timing/ Timeline API via `PerformanceObserver`
+### Node.js
+
+```js
+const { asyncPoll } = require('async-poll');
+
+/** Fetch news from a mock URL */
+const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
+/** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
+const conditionFn = d => d.data.news.length > 100 || d.data.status === 'complete';
+/** Poll every 2 seconds */
+const interval = 2e3;
+/** Timeout after 30 seconds and returns end result */
+const timeout = 30e3;
+
+asyncPoll(fn, conditionFn, { interval, timeout })
+  .then(console.log)
+  .catch(console.error);
+```
+
+### Performance Timing/ Timeline API via `PerformanceObserver`
 
 Performance timing data can be obtained via the experimental [Performance Tming API][performance-timing-api-url] that has been added as of [Node.js 8.5.0][nodejs-url] or [Performance Timeline API][performance-timeline-api-url] on browsers.
 
@@ -127,21 +111,15 @@ Performance timing data can be obtained via the experimental [Performance Tming 
 /** For Node.js **only**, no import is required on browser. */
 import { PerformanceObserver } from 'perf_hooks';
 
-...
 async function main() {
-  let measurements = {};
+  let measurements: Record<string, unknown> = {};
   const perfObs = new PerformanceObserver((list) => {
     for (const n of list.getEntries()) {
       measurements[n.name] = n.duration;
     }
   });
   perfObs.observe({ entryTypes: ['measure'] });
-  const d = await asyncPoll({
-    fn,
-    conditionFn,
-    interval,
-    timeout
-  });
+  const d = await asyncPoll(fn, conditionFn, { interval, timeout });
   perObs.disconnect();
 
   return {
@@ -149,27 +127,24 @@ async function main() {
     measurements,
   };
 }
-...
 ```
 
 ## API Reference
 
-### AsyncPollParams\<T\>
+### AsyncPollOptions
 
 ```ts
-declare interface AsyncPollParams<T> {
-  fn: () => Promise<T>;
-  conditionFn: (d: T) => boolean;
+interface AsyncPollOptions {
   interval: number;
   timeout: number;
 }
 ```
 
-### asyncPoll\<T\>(params)
+### asyncPoll\<T\>(fn, conditionFn[, options])
 
-- `params` <[AsyncPollParams][asyncpollparamst-url]> Configuration to setup asynchronous polling.
-  - `fn` <[Function][function-mdn-url]> Function to execute for each polling happens.
-  - `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
+- `fn` <[Function][function-mdn-url]> Function to execute for each polling happens.
+- `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
+- `options` <[AsyncPollOptions][asyncpolloptions-url]> Polling options.
   - `interval` <[number][number-mdn-url]> Polling interval.
   - `timeout` <[number][number-mdn-url]> Timeout.
 - returns: <[Promise][promise-mdn-url]<`T`>> Promise which resolves with a value in the type of `T`.
@@ -185,7 +160,7 @@ declare interface AsyncPollParams<T> {
 [node-releases-url]: https://nodejs.org/en/download/releases
 [performance-timing-api-url]: https://nodejs.org/api/perf_hooks.html
 [performance-timeline-api-url]: https://developer.mozilla.org/en-US/docs/Web/API/Performance
-[asyncpollparamst-url]: #asyncpollparamst
+[asyncpolloptions-url]: #asyncpolloptions
 
 <!-- MDN -->
 [array-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
@@ -200,7 +175,9 @@ declare interface AsyncPollParams<T> {
 [string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 
 <!-- Badges -->
-[version-badge]: https://flat.badgen.net/npm/v/async-poll
+[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb
+
+[version-badge]: https://flat.badgen.net/npm/v/async-poll?icon=npm
 [node-version-badge]: https://flat.badgen.net/npm/node/async-poll
 [mit-license-badge]: https://flat.badgen.net/npm/license/async-poll
 
@@ -209,10 +186,10 @@ declare interface AsyncPollParams<T> {
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/async-poll
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/async-poll
 
-[travis-badge]: https://flat.badgen.net/travis/motss/async-poll
-[circleci-badge]: https://flat.badgen.net/circleci/github/motss/async-poll
+[travis-badge]: https://flat.badgen.net/travis/motss/async-poll?icon=travis
+[circleci-badge]: https://flat.badgen.net/circleci/github/motss/async-poll?icon=circleci
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/async-poll
-[codecov-badge]: https://flat.badgen.net/codecov/c/github/motss/async-poll?label=codecov
+[codecov-badge]: https://flat.badgen.net/codecov/c/github/motss/async-poll?label=codecov&icon=codecov
 [coveralls-badge]: https://flat.badgen.net/coveralls/c/github/motss/async-poll?label=coveralls
 
 [codebeat-badge]: https://codebeat.co/badges/56458b75-7d18-4a52-b3eb-b29f5367e244
@@ -220,6 +197,8 @@ declare interface AsyncPollParams<T> {
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
+[follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/async-poll
+
 [version-url]: https://www.npmjs.com/package/async-poll
 [node-version-url]: https://nodejs.org/en/download
 [mit-license-url]: https://github.com/motss/async-poll/blob/master/LICENSE

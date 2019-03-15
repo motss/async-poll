@@ -1,15 +1,18 @@
 // @ts-check
 
+import { PerformanceObserver } from 'perf_hooks';
+
+import fetch from 'node-fetch';
+
 import { asyncPoll } from '..';
-import { PerformanceObserver } from 'perf_hooks/';
 
 async function main() {
   const fn = async () => fetch('http://example.com').then(r => r.text());
-  const conditionFn = d => Array.isArray(d);
+  const conditionFn = (s: string) => Array.isArray(s);
   const interval = 2e3;
   const timeout = 10e3;
 
-  let a = {};
+  const a: Record<string, unknown> = {};
   const perfObs = new PerformanceObserver((list) => {
     for (const n of list.getEntries()) {
       a[n.name] = n.duration;
@@ -17,7 +20,7 @@ async function main() {
   });
 
   perfObs.observe({ entryTypes: ['measure'] });
-  const d = await asyncPoll({ fn, conditionFn, interval, timeout });
+  const d = await asyncPoll(fn, conditionFn, { interval, timeout });
   perfObs.disconnect();
 
   return {
