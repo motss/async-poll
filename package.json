@@ -24,40 +24,34 @@
     "url": "https://github.com/motss"
   },
   "files": [
-    "dist/index.d.ts",
-    "dist/index.js",
-    "dist/index.mjs",
-    "dist/browser.d.ts",
-    "dist/browser.js",
-    "dist/browser.mjs"
+    "dist"
   ],
-  "main": "dist/index",
-  "types": [
-    "dist/index.d.ts",
-    "dist/browser.d.ts"
-  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist/ && npm run build:cjs && npm run build:esm && echo \"> [build] Done!\"",
-    "build:cjs": "npm run lint && tsc -p tsconfig.prod.json && echo \"> [cjs] Done!\"",
-    "build:debug": "rm -rf dist/ && tsc -p tsconfig.json --watch",
-    "build:esm": "npm run lint && tsc -p tsconfig.esm.prod.json && mv tmp/index.js dist/index.mjs && mv tmp/browser.js dist/browser.mjs && rm -rf tmp && echo \"> [esm] Done!\"",
-    "build:test": "rm -rf dist/ && tsc -p tsconfig.json",
-    "clean": "rm -rf ./*.*js ./*.d.ts dist/",
-    "demo": "node demo/index.js",
-    "jest": "jest --watchAll --config ./.jestrc.json",
+    "build": "rm -rf dist/ && npm run rollup",
+    "build:test": "rm -rf dist/ && tsc -p ./tsconfig.test.json",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
     "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
     "prepublishOnly": "npm run lint && npm run build",
-    "test": "jest --config ./.jestrc.json"
+    "rollup": "rollup -c ./rollup.config.js",
+    "test": "npm run build:test && jest --config ./.jestrc.json",
+    "ts": "rm -rf dist/ && tsc",
+    "watch": "npm run ts -- --watch"
   },
   "dependencies": {},
   "devDependencies": {
-    "@messageflow/tslint-config": "^1.2.0",
-    "@types/jest": "^23.3.2",
-    "@types/node": "^10.11.3",
-    "jest": "^23.6.0",
-    "tslint": "^5.11.0",
-    "typescript": "^3.1.1"
+    "@messageflow/tslint-config": "^1.3.0",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.11.3",
+    "jest": "^24.5.0",
+    "rollup": "^1.6.0",
+    "rollup-plugin-filesize": "^6.0.1",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript2": "^0.20.1",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.3333"
   },
   "engines": {
     "node": ">= 8.9.0",
@@ -65,5 +59,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "modules": "dist/index.js"
 }

@@ -1,12 +1,12 @@
-declare interface TestData {
+interface TestData {
   message: string;
   pollingIdx: number;
 }
 
 import { performance } from 'perf_hooks';
-import asyncPoll from '../browser';
+import asyncPoll from '../browser.js';
 
-describe('async-poll', () => {
+describe('browser', () => {
   const fn = async () => {
     return { message: 'Polling done!' };
   };
@@ -26,14 +26,18 @@ describe('async-poll', () => {
   });
 
   describe('error', () => {
+    it(`throws when undefined 'options'`, async () => {
+      try {
+        await asyncPoll(null!, null!, null!);
+      } catch (e) {
+        expect(e).toStrictEqual(
+          new TypeError(`Expected 'interval' to be a valid number, but received 'undefined'`));
+      }
+    });
+
     it(`throws when undefined 'interval'`, async () => {
       try {
-        await asyncPoll({
-          fn: null!,
-          conditionFn: null!,
-          interval: null!,
-          timeout: null!,
-        });
+        await asyncPoll(null!, null!, { interval: null!, timeout: null! });
       } catch (e) {
         expect(e).toStrictEqual(
           new TypeError(`Expected 'interval' to be a valid number, but received 'null'`));
@@ -42,12 +46,7 @@ describe('async-poll', () => {
 
     it(`throws when undefined 'timeout'`, async () => {
       try {
-        await asyncPoll({
-          fn: null!,
-          conditionFn: null!,
-          interval: 2e3,
-          timeout: null!,
-        });
+        await asyncPoll(null!, null!, { interval: 2e3, timeout: null! });
       } catch (e) {
         expect(e).toStrictEqual(
           new TypeError(`Expected 'timeout' to be a valid number, but received 'null'`));
@@ -56,12 +55,10 @@ describe('async-poll', () => {
 
     it('throws when error occurs', async () => {
       try {
-        await asyncPoll({
-          interval,
-          timeout,
-          fn: () => { throw new Error('stop in polling'); },
-          conditionFn: () => true,
-        });
+        await asyncPoll(
+          () => { throw new Error('stop in polling'); },
+          () => true,
+          { interval, timeout });
       } catch (e) {
         expect(e).toStrictEqual(new Error('stop in polling'));
       }
@@ -72,12 +69,7 @@ describe('async-poll', () => {
   describe('ok', () => {
     it('completes the async polling', async () => {
       try {
-        const d = await asyncPoll({
-          fn,
-          conditionFn,
-          interval,
-          timeout,
-        });
+        const d = await asyncPoll(fn, conditionFn, { interval, timeout });
 
         expect(d).toStrictEqual({ message: 'Polling done!' });
       } catch (e) {
@@ -89,18 +81,13 @@ describe('async-poll', () => {
       try {
         let pollingIdx = 0;
 
-        const d = await asyncPoll<TestData>({
-          conditionFn: (n: { pollingIdx: number }) => {
-            return n.pollingIdx > 1;
-          },
-          fn: async () => new Promise<TestData>((yay) => {
+        const d = await asyncPoll<TestData>(
+          async () => new Promise<TestData>((yay) => {
             pollingIdx += 1;
-
             setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 1);
           }),
-          interval: 2e3,
-          timeout: 5e3,
-        });
+          (n: { pollingIdx: number }) => n.pollingIdx > 1,
+          { interval: 2e3, timeout: 5e3 });
 
         expect(d.message).toStrictEqual('polling...');
         expect(d.pollingIdx).toBeGreaterThan(1);
@@ -113,18 +100,13 @@ describe('async-poll', () => {
       try {
         let pollingIdx = 0;
 
-        const d = await asyncPoll<TestData>({
-          conditionFn: (n: { pollingIdx: number }) => {
-            return n.pollingIdx > 1;
-          },
-          fn: async () => new Promise<TestData>((yay) => {
+        const d = await asyncPoll<TestData>(
+          async () => new Promise<TestData>((yay) => {
             pollingIdx += 1;
-
             setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 3e3);
           }),
-          interval: 2e3,
-          timeout: 5e3,
-        });
+          (n: { pollingIdx: number }) => n.pollingIdx > 1,
+          { interval: 2e3, timeout: 5e3 });
 
         expect(d.message).toStrictEqual('polling...');
         expect(d.pollingIdx).toBeGreaterThan(1);
@@ -135,13 +117,10 @@ describe('async-poll', () => {
 
     it(`returns when 'timeout' is hit`, async () => {
       try {
-        const d = await asyncPoll({
+        const d = await asyncPoll(
+          async () => new Promise(yay => setTimeout(() => yay({ message: 'Timeout hit' }), 5e3)),
           conditionFn,
-          timeout,
-          fn: async () => new Promise(yay =>
-            setTimeout(() => yay({ message: 'Timeout hit' }), 5e3)),
-          interval: 2e3,
-        });
+          { timeout, interval: 2e3 });
 
         expect(d).toStrictEqual({ message: 'Timeout hit' });
       } catch (e) {

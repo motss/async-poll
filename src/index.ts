@@ -1,6 +1,4 @@
-declare interface AsyncPollParams<T> {
-  fn: () => Promise<T>;
-  conditionFn: (d: T) => boolean;
+interface AsyncPollOptions {
   interval: number;
   timeout: number;
 }
@@ -8,16 +6,23 @@ declare interface AsyncPollParams<T> {
 import { performance } from 'perf_hooks';
 
 async function delay(t: number) {
-  /** NOTE: Why `process.nextTick`? {@link http://bit.do/exvdT|process.nexTick vs setImmediate} */
+  /**
+   * NOTE:
+   *
+   * References for `process.nextTick` vs `setImmediate` vs `Promise`:-
+   *  1. https://bit.ly/2Mmk7Xa
+   *  2. https://bit.ly/2TIIPYr
+   */
   return new Promise(yay => t < 1 ? process.nextTick(yay) : setTimeout(yay, t));
 }
 
-export async function asyncPoll<T>({
-  fn,
-  conditionFn,
-  interval,
-  timeout,
-}: AsyncPollParams<T>) {
+export async function asyncPoll<T>(
+  fn: () => Promise<T>,
+  conditionFn: (d: T) => boolean,
+  options: AsyncPollOptions
+) {
+  const { interval, timeout }: AsyncPollOptions = options || {};
+
   if (typeof interval !== 'number' || interval < 0) {
     throw new TypeError(`Expected 'interval' to be a valid number, but received '${interval}'`);
   }
@@ -53,8 +58,7 @@ export async function asyncPoll<T>({
 
       await delay(itv - diff);
       performance.mark('next poll starts');
-      performance.measure(
-        `poll ${i + 1} starts after`, `poll ${i} ends`, 'next poll starts');
+      performance.measure(`poll ${i + 1} starts after`, `poll ${i} ends`, 'next poll starts');
       i += 1;
     } while (shouldContinuePolling);
     performance.mark('poll ends');

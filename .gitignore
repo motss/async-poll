@@ -4,7 +4,6 @@
 .*cache
 .build/
 .DS_Store
-.nyc_output
 .tmp/
 .vscode
 *.env
@@ -24,4 +23,4 @@ node_modules/
 *.mjs
 
 # Do not ignore
-!src/demo/index.mjs
+!rollup.config.js

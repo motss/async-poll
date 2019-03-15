@@ -1,6 +1,4 @@
 {
-  "globals": {
-  },
   "testEnvironment": "node",
   "collectCoverage": true,
   "coverageDirectory": "./coverage",
@@ -14,10 +12,9 @@
   },
   "collectCoverageFrom": [
     "!**/node_modules/**",
-    "!**/dist/demo/**/*.{js|jsx}",
-    "!**/dist/test*/**/*.{js|jsx}",
-    "!**/dist/*_typings.js",
-    "**/dist/**/*.{js|jsx}"
+    "!**/src/demo/**/*.{js|jsx}",
+    "!**/src/test*/**/*.{js|jsx}",
+    "<rootDir>/dist/**/*.js"
   ],
   "verbose": true,
   "bail": true,
@@ -28,9 +25,8 @@
     "**/dist/test*/**/*.spec.(js|jsx)"
   ],
   "moduleFileExtensions": [
-    "ts",
-    "tsx",
     "js",
+    "jsx",
     "json"
   ]
 }
