@@ -28,9 +28,9 @@
     "declaration": true,
     "declarationDir": "dist"
   },
-  "include": [
-    "src/*",
-    "src/test/**/*",
-    "src/demo/**/*"
+  "include": ["src/*", "src/demo/**/*"],
+  "exclude": [
+    "node_modules",
+    "src/test/**/*"
   ]
 }

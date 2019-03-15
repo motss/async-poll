@@ -24,9 +24,11 @@
     "url": "https://github.com/motss"
   },
   "files": [
-    "dist"
+    "dist/*.d.ts",
+    "dist/*.*js"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index",
+  "module": "dist/index.mjs",
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist/ && npm run rollup",
@@ -53,6 +55,7 @@
     "rollup-plugin-filesize": "^6.0.1",
     "rollup-plugin-node-resolve": "^4.0.1",
     "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-tslint": "^0.2.2",
     "rollup-plugin-typescript2": "^0.20.1",
     "tslint": "^5.14.0",
     "typescript": "^3.3.3333"

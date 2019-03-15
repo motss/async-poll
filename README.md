@@ -38,6 +38,9 @@
 - [Usage](#usage)
   - [TypeScript or native ES modules](#typescript-or-native-es-modules)
   - [Node.js](#nodejs)
+  - [Browser](#browser)
+    - [ES Modules](#es-modules)
+    - [IIFE](#iife)
   - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
 - [API Reference](#api-reference)
   - [AsyncPollOptions](#asyncpolloptions)
@@ -101,6 +104,51 @@ const timeout = 30e3;
 asyncPoll(fn, conditionFn, { interval, timeout })
   .then(console.log)
   .catch(console.error);
+```
+
+### Browser
+
+#### ES Modules
+
+```html
+<script type="module">
+  import { asyncPoll } from 'https://unpkg.com/async-poll@latest/dist/browser.js';
+
+  /** Fetch news from a mock URL */
+  const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
+  /** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
+  const conditionFn = d => d.data.news.length > 100 || d.data.status === 'complete';
+  /** Poll every 2 seconds */
+  const interval = 2e3;
+  /** Timeout after 30 seconds and returns end result */
+  const timeout = 30e3;
+
+  asyncPoll(fn, conditionFn, { interval, timeout })
+    .then(console.log)
+    .catch(console.error);
+</script>
+```
+
+#### IIFE
+
+```html
+<script src="https://unpkg.com/async-poll@latest/dist/browser.iife.js"></script>
+<script>
+  const { asyncPoll } = window.AsyncPoll;
+
+  /** Fetch news from a mock URL */
+  const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
+  /** Keep polling until the more than 100 `news` are received or `status` returns `complete` */
+  const conditionFn = d => d.data.news.length > 100 || d.data.status === 'complete';
+  /** Poll every 2 seconds */
+  const interval = 2e3;
+  /** Timeout after 30 seconds and returns end result */
+  const timeout = 30e3;
+
+  asyncPoll(fn, conditionFn, { interval, timeout })
+    .then(console.log)
+    .catch(console.error);
+</script>
 ```
 
 ### Performance Timing/ Timeline API via `PerformanceObserver`
