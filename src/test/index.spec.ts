@@ -5,7 +5,7 @@ interface TestData {
 
 import asyncPoll from '..';
 
-describe('node', () => {
+describe('async-poll (node)', () => {
   const fn = async () => {
     return { message: 'Polling done!' };
   };

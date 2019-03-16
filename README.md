@@ -112,7 +112,7 @@ asyncPoll(fn, conditionFn, { interval, timeout })
 
 ```html
 <script type="module">
-  import { asyncPoll } from 'https://unpkg.com/async-poll@latest/dist/browser.js';
+  import { asyncPoll } from 'https://unpkg.com/async-poll@latest/dist/async-poll.js';
 
   /** Fetch news from a mock URL */
   const fn = async () => fetch('https://example.com/api/news').then(r => r.json());
@@ -132,7 +132,7 @@ asyncPoll(fn, conditionFn, { interval, timeout })
 #### IIFE
 
 ```html
-<script src="https://unpkg.com/async-poll@latest/dist/browser.iife.js"></script>
+<script src="https://unpkg.com/async-poll@latest/dist/async-poll.iife.js"></script>
 <script>
   const { asyncPoll } = window.AsyncPoll;
 
@@ -225,7 +225,7 @@ interface AsyncPollOptions {
 <!-- Badges -->
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb
 
-[version-badge]: https://flat.badgen.net/npm/v/async-poll?icon=npm
+[version-badge]: https://flat.badgen.net/npm/v/async-poll/latest?icon=npm
 [node-version-badge]: https://flat.badgen.net/npm/node/async-poll
 [mit-license-badge]: https://flat.badgen.net/npm/license/async-poll
 

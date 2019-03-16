@@ -4,9 +4,9 @@ interface TestData {
 }
 
 import { performance } from 'perf_hooks';
-import asyncPoll from '../browser.js';
+import asyncPoll from '../async-poll.js';
 
-describe('browser', () => {
+describe('async-poll (browser)', () => {
   const fn = async () => {
     return { message: 'Polling done!' };
   };

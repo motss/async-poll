@@ -28,13 +28,13 @@ const multiBuild = [
     format: 'cjs',
   },
   {
-    input: ['src/browser.ts'],
-    file: 'dist/browser.js',
+    input: ['src/async-poll.ts'],
+    file: 'dist/async-poll.js',
     format: 'esm',
   },
   {
-    input: ['src/browser.ts'],
-    file: 'dist/browser.iife.js',
+    input: ['src/async-poll.ts'],
+    file: 'dist/async-poll.iife.js',
     name: 'AsyncPoll',
     format: 'iife',
   }
