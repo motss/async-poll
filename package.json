@@ -1,6 +1,6 @@
 {
   "name": "async-poll",
-  "version": "1.1.0-0",
+  "version": "1.1.0",
   "description": "Advanced polling module with timeout and metrics collection",
   "keywords": [
     "async-poll",
