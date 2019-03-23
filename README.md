@@ -17,7 +17,6 @@
 [![Packagephobia][packagephobia-badge]][packagephobia-url]
 [![Bundlephobia][bundlephobia-badge]][bundlephobia-url]
 
-[![Build Status][travis-badge]][travis-url]
 [![CircleCI][circleci-badge]][circleci-url]
 [![Dependency Status][daviddm-badge]][daviddm-url]
 [![codecov][codecov-badge]][codecov-url]
@@ -223,7 +222,7 @@ interface AsyncPollOptions {
 [string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 
 <!-- Badges -->
-[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb
+[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 
 [version-badge]: https://flat.badgen.net/npm/v/async-poll/latest?icon=npm
 [node-version-badge]: https://flat.badgen.net/npm/node/async-poll
@@ -234,7 +233,6 @@ interface AsyncPollOptions {
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/async-poll
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/async-poll
 
-[travis-badge]: https://flat.badgen.net/travis/motss/async-poll?icon=travis
 [circleci-badge]: https://flat.badgen.net/circleci/github/motss/async-poll?icon=circleci
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/async-poll
 [codecov-badge]: https://flat.badgen.net/codecov/c/github/motss/async-poll?label=codecov&icon=codecov
@@ -255,7 +253,6 @@ interface AsyncPollOptions {
 [packagephobia-url]: https://packagephobia.now.sh/result?p=async-poll
 [bundlephobia-url]: https://bundlephobia.com/result?p=async-poll
 
-[travis-url]: https://travis-ci.org/motss/async-poll
 [circleci-url]: https://circleci.com/gh/motss/async-poll/tree/master
 [daviddm-url]: https://david-dm.org/motss/async-poll
 [codecov-url]: https://codecov.io/gh/motss/async-poll
