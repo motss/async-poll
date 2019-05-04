@@ -19,7 +19,7 @@ defaults: &defaults
     - restore_cache: *restore-cache-deps
     - run:
         name: Install Global Dependencies
-        command: sudo npm i -g npm@latest --quiet
+        command: sudo npm i -g npm@latest codecov@latest coveralls@latest --quiet
     - run:
         name: Install Dependencies
         command: npm ci --quiet
