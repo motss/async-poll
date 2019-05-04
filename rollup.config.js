@@ -11,7 +11,11 @@ const pluginFn = (iife) => [
     throwError: true,
     configuration: `tslint${isProd ? '.prod' : ''}.json`,
   }),
-  typescript({ tsconfig: `./tsconfig${iife ? '.iife' : ''}.json` }),
+  typescript({
+    tsconfig: './tsconfig.json',
+    exclude: isProd ? ['src/(demo|test)/**/*'] : [],
+    ...(iife ? { tsconfigOverride: { compilerOptions: { target: 'es5' } } } : {}),
+  }),
   isProd && terser(),
   isProd && filesize({ showBrotliSize: true }),
 ];
@@ -19,25 +23,47 @@ const pluginFn = (iife) => [
 const multiBuild = [
   {
     input: ['src/index.ts'],
-    file: 'dist/index.mjs',
-    format: 'esm',
+    output: {
+      file: 'dist/index.mjs',
+      format: 'esm',
+      exports: 'named',
+      sourcemap: true,
+    },
   },
   {
     input: ['src/index.ts'],
-    file: 'dist/index.js',
-    format: 'cjs',
+    output: {
+      file: 'dist/index.js',
+      format: 'cjs',
+      sourcemap: true,
+      exports: 'named',
+    },
   },
   {
     input: ['src/async-poll.ts'],
-    file: 'dist/async-poll.js',
-    format: 'esm',
+    output: {
+      file: 'dist/async-poll.js',
+      format: 'esm',
+      sourcemap: true,
+    },
+    context: 'window',
   },
   {
     input: ['src/async-poll.ts'],
-    file: 'dist/async-poll.iife.js',
-    name: 'AsyncPoll',
-    format: 'iife',
+    output: {
+      file: 'dist/async-poll.iife.js',
+      name: 'AsyncPoll',
+      format: 'iife',
+      sourcemap: true,
+      exports: 'named',
+    },
+    context: 'window',
   }
-].map(({ input, ...n }) => ({ input, output: n, plugins: pluginFn('iife' === n.format) }));
+].map(({ input, output, ...n }) => ({
+  input,
+  output,
+  plugins: pluginFn('iife' === output.format),
+  ...n,
+}));
 
 export default multiBuild;
