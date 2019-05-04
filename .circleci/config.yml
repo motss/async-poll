@@ -36,6 +36,13 @@ defaults: &defaults
     - run:
         name: Test
         command: npm run jest
+    - run:
+      name: Test Coverage
+      when: on_success
+      command: |
+        cat ./coverage/lcov.info | coveralls
+        cat ./coverage/lcov.info | codecov
+
 jobs:
   node-v8:
     <<: *defaults
