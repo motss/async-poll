@@ -68,65 +68,66 @@ describe('async-poll (browser)', () => {
 
   describe('ok', () => {
     it('completes the polling', async () => {
-      try {
-        const d = await asyncPoll(fn, conditionFn, { interval, timeout });
+      const d = await asyncPoll(fn, conditionFn, { interval, timeout });
 
-        expect(d).toStrictEqual({ message: 'Polling done!' });
-      } catch (e) {
-        throw e;
-      }
+      expect(d).toStrictEqual({ message: 'Polling done!' });
     }, 10e3);
 
     it(`returns after a couple of pollings with delays`, async () => {
-      try {
-        let pollingIdx = 0;
+      let pollingIdx = 0;
 
-        const d = await asyncPoll<TestData>(
-          async () => new Promise<TestData>((yay) => {
-            pollingIdx += 1;
-            setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 1);
-          }),
-          (n: { pollingIdx: number }) => n.pollingIdx > 1,
-          { interval: 2e3, timeout: 5e3 });
+      const d = await asyncPoll<TestData>(
+        async () => new Promise<TestData>((yay) => {
+          pollingIdx += 1;
+          setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 1);
+        }),
+        (n: { pollingIdx: number }) => n.pollingIdx > 1,
+        { interval: 2e3, timeout: 5e3 });
 
-        expect(d.message).toStrictEqual('polling...');
-        expect(d.pollingIdx).toBeGreaterThan(1);
-      } catch (e) {
-        throw e;
-      }
+      expect(d.message).toStrictEqual('polling...');
+      expect(d.pollingIdx).toBeGreaterThan(1);
     }, 10e3);
 
     it(`returns with next polling starts instantly`, async () => {
-      try {
-        let pollingIdx = 0;
+      let pollingIdx = 0;
 
-        const d = await asyncPoll<TestData>(
-          async () => new Promise<TestData>((yay) => {
-            pollingIdx += 1;
-            setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 3e3);
-          }),
-          (n: { pollingIdx: number }) => n.pollingIdx > 1,
-          { interval: 2e3, timeout: 5e3 });
+      const d = await asyncPoll<TestData>(
+        async () => new Promise<TestData>((yay) => {
+          pollingIdx += 1;
+          setTimeout(() => yay({ pollingIdx, message: 'polling...' }), 3e3);
+        }),
+        (n: { pollingIdx: number }) => n.pollingIdx > 1,
+        { interval: 2e3, timeout: 5e3 });
 
-        expect(d.message).toStrictEqual('polling...');
-        expect(d.pollingIdx).toBeGreaterThan(1);
-      } catch (e) {
-        throw e;
-      }
+      expect(d.message).toStrictEqual('polling...');
+      expect(d.pollingIdx).toBeGreaterThan(1);
     }, 10e3);
 
     it(`returns when 'timeout' is hit`, async () => {
-      try {
-        const d = await asyncPoll(
-          async () => new Promise(yay => setTimeout(() => yay({ message: 'Timeout hit' }), 5e3)),
-          conditionFn,
-          { timeout, interval: 2e3 });
+      const d = await asyncPoll(
+        async () => new Promise(yay => setTimeout(() => yay({ message: 'Timeout hit' }), 5e3)),
+        conditionFn,
+        { timeout, interval: 2e3 });
 
-        expect(d).toStrictEqual({ message: 'Timeout hit' });
-      } catch (e) {
-        throw e;
-      }
+      expect(d).toStrictEqual({ message: 'Timeout hit' });
     }, 10e3);
+
+    it(`never stops polling`, async () => {
+      const d = 'poll forever';
+
+      try {
+        await new Promise(async (yay, nah) => {
+          setTimeout(() => nah(new Error(d)), 10e3);
+
+          yay(await asyncPoll(
+            async () => Promise.resolve(d),
+            conditionFn,
+            { timeout: -1, interval: 1e3 }));
+        });
+      } catch (e) {
+        expect(e).toStrictEqual(new Error(d));
+      }
+    }, 15e3);
 
   });
 

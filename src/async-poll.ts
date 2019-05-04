@@ -16,7 +16,7 @@ export async function asyncPoll<T>(
     throw new TypeError(`Expected 'interval' to be a valid number, but received '${interval}'`);
   }
 
-  if (typeof timeout !== 'number' || timeout < 0) {
+  if (typeof timeout !== 'number') {
     throw new TypeError(`Expected 'timeout' to be a valid number, but received '${timeout}'`);
   }
 
@@ -24,6 +24,7 @@ export async function asyncPoll<T>(
     const perf = window.performance;
     const itv = +interval;
     const maxItv = +timeout;
+    const isForever = timeout < 1;
     let d: T;
     let op = 0;
     let ed = 0;
@@ -39,7 +40,7 @@ export async function asyncPoll<T>(
 
       const diff = Math.ceil(ed - op);
 
-      shouldContinuePolling = duration < maxItv && !conditionFn(d);
+      shouldContinuePolling = isForever ? true : duration < maxItv && !conditionFn(d);
       duration += diff > itv ? diff : itv;
       perf.measure(`poll ${i} takes`, `poll ${i} starts`, `poll ${i} ends`);
 
