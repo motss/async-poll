@@ -195,7 +195,7 @@ interface AsyncPollOptions {
 - `conditionFn` <[Function][function-mdn-url]> Function to check the condition before a subsequent polling takes place. The function should return a boolean. If `true`, the polling stops and returns with a value in the type of `T`.
 - `options` <[AsyncPollOptions][asyncpolloptions-url]> Polling options.
   - `interval` <[number][number-mdn-url]> Polling interval.
-  - `timeout` <[number][number-mdn-url]> Timeout.
+  - `timeout` <[number][number-mdn-url]> Timeout in milliseconds. When `timeout` is less than 1, this indicates a infinite polling.
 - returns: <[Promise][promise-mdn-url]<`T`>> Promise which resolves with a value in the type of `T`.
 
 ## License
