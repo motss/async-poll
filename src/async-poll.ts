@@ -1,3 +1,5 @@
+import { globalPerformance } from './global-performance';
+
 interface AsyncPollOptions {
   interval: number;
   timeout: number;
@@ -21,7 +23,7 @@ export async function asyncPoll<T>(
   }
 
   try {
-    const perf = window.performance;
+    const perf = await globalPerformance();
     const itv = +interval;
     const maxItv = +timeout;
     const isForever = timeout < 1;
