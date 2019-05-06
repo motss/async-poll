@@ -1,9 +1,9 @@
+import { globalPerformance } from './global-performance';
+
 interface AsyncPollOptions {
   interval: number;
   timeout: number;
 }
-
-import { performance } from 'perf_hooks';
 
 async function delay(t: number) {
   /**
@@ -35,6 +35,8 @@ export async function asyncPoll<T>(
     const itv = +interval;
     const maxItv = +timeout;
     const isForever = timeout < 1;
+    const perf = await globalPerformance();
+
     let d: T;
     let op = 0;
     let ed = 0;
@@ -42,28 +44,28 @@ export async function asyncPoll<T>(
     let i = 0;
     let shouldContinuePolling = false;
 
-    performance.mark('poll starts');
+    perf.mark('poll starts');
     do {
-      op = (performance.mark(`poll ${i} starts`), performance.now());
+      op = (perf.mark(`poll ${i} starts`), perf.now());
       d = await fn();
-      ed = (performance.mark(`poll ${i} ends`), performance.now());
+      ed = (perf.mark(`poll ${i} ends`), perf.now());
 
       const diff = Math.ceil(ed - op);
 
       shouldContinuePolling = isForever ? true : duration < maxItv && !conditionFn(d);
       duration += diff > itv ? diff : itv;
-      performance.measure(`poll ${i} takes`, `poll ${i} starts`, `poll ${i} ends`);
+      perf.measure(`poll ${i} takes`, `poll ${i} starts`, `poll ${i} ends`);
 
       /** NOTE: Fast return */
       if (!shouldContinuePolling) break;
 
       await delay(itv - diff);
-      performance.mark('next poll starts');
-      performance.measure(`poll ${i + 1} starts after`, `poll ${i} ends`, 'next poll starts');
+      perf.mark('next poll starts');
+      perf.measure(`poll ${i + 1} starts after`, `poll ${i} ends`, 'next poll starts');
       i += 1;
     } while (shouldContinuePolling);
-    performance.mark('poll ends');
-    performance.measure('poll spent', 'poll starts', 'poll ends');
+    perf.mark('poll ends');
+    perf.measure('poll spent', 'poll starts', 'poll ends');
 
     return d;
   } catch (e) {

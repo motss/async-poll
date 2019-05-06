@@ -40,7 +40,7 @@ const multiBuild = [
     },
   },
   {
-    input: ['src/async-poll.ts'],
+    input: ['src/index.ts'],
     output: {
       file: 'dist/async-poll.js',
       format: 'esm',
@@ -49,7 +49,7 @@ const multiBuild = [
     context: 'window',
   },
   {
-    input: ['src/async-poll.ts'],
+    input: ['src/index.ts'],
     output: {
       file: 'dist/async-poll.iife.js',
       name: 'AsyncPoll',
