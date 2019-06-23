@@ -1,3 +1,5 @@
+🚨 No longer maintained. Moved to [@reallyland/node_mod](https://github.com/reallyland/node_mod). 🚨
+
 <div align="center" style="text-align: center;">
   <h1 style="border-bottom: none;">async-poll</h1>
 
@@ -34,19 +36,19 @@
 
 ## Table of contents <!-- omit in toc -->
 
-- [Pre-requisites](#pre-requisites)
-- [Install](#install)
-- [Usage](#usage)
-  - [TypeScript or native ES modules](#typescript-or-native-es-modules)
-  - [Node.js](#nodejs)
-  - [Browser](#browser)
-    - [ES Modules](#es-modules)
-    - [IIFE](#iife)
-  - [Performance Timing/ Timeline API via `PerformanceObserver`](#performance-timing-timeline-api-via-performanceobserver)
-- [API Reference](#api-reference)
-  - [AsyncPollOptions](#asyncpolloptions)
-  - [asyncPoll\<T\>(fn, conditionFn[, options])](#asyncpolltfn-conditionfn-options)
-- [License](#license)
+- [Pre-requisites](#Pre-requisites)
+- [Install](#Install)
+- [Usage](#Usage)
+  - [TypeScript or native ES modules](#TypeScript-or-native-ES-modules)
+  - [Node.js](#Nodejs)
+  - [Browser](#Browser)
+    - [ES Modules](#ES-Modules)
+    - [IIFE](#IIFE)
+  - [Performance Timing/ Timeline API via `PerformanceObserver`](#Performance-Timing-Timeline-API-via-PerformanceObserver)
+- [API Reference](#API-Reference)
+  - [AsyncPollOptions](#AsyncPollOptions)
+  - [asyncPoll\<T\>(fn, conditionFn[, options])](#asyncPollTfn-conditionFn-options)
+- [License](#License)
 
 ## Pre-requisites
 
